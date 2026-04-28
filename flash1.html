@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Ble jammer installer</title>
+    <meta
+      name="description"
+      content="Easily allow users to install Ble jammer."
+    />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="color-scheme" content="dark light" />
+    
+    
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap');
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 0;
+      margin: 0;
+      line-height: 1.6;
+      color: #eaeaea;
+      min-height: 100vh;
+      background-color: #050008;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* ── Canvas background ── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    /* ── Page layout ── */
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      width: 100%;
+      padding: 20px;
+    }
+
+    /* ── Glass card ── */
+    .content {
+      width: 100%;
+      max-width: 580px;
+      padding: 44px 40px;
+      background: rgba(10, 0, 20, 0.45);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: 24px;
+      border: 1px solid rgba(180, 130, 255, 0.18);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.04),
+        0 20px 60px rgba(0, 0, 0, 0.6),
+        0 0 80px rgba(100, 30, 200, 0.15) inset;
+      text-align: center;
+    }
+
+    /* ── Heading ── */
+    h1 {
+      margin: 0 0 6px 0;
+      font-size: 1.9rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      background: linear-gradient(120deg, #d4b0ff 0%, #a855f7 40%, #c4b5fd 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: none;
+    }
+
+    .subtitle {
+      font-size: 0.8rem;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: rgba(200, 170, 255, 0.55);
+      margin-bottom: 32px;
+      font-weight: 300;
+    }
+
+    /* ── Section label ── */
+    p.choose-label {
+      color: rgba(220, 200, 255, 0.7);
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 0 0 16px 0;
+      font-weight: 400;
+    }
+
+    /* ── Radio list ── */
+    .radios {
+      text-align: left;
+      padding: 0;
+      margin: 0 0 30px 0;
+    }
+
+    .radios li {
+      list-style: none;
+      margin-bottom: 10px;
+      background: rgba(80, 20, 160, 0.18);
+      border-radius: 14px;
+      padding: 13px 18px;
+      border: 1px solid rgba(180, 120, 255, 0.12);
+      transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+    }
+
+    .radios li:hover {
+      background: rgba(130, 60, 220, 0.28);
+      border-color: rgba(200, 150, 255, 0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(120, 40, 200, 0.3);
+    }
+
+    .radios label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-size: 0.92rem;
+      line-height: 1.45;
+      color: rgba(230, 210, 255, 0.9);
+      gap: 14px;
+    }
+
+    /* ── Custom radio ── */
+    input[type="radio"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid rgba(170, 100, 255, 0.6);
+      outline: none;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    input[type="radio"]:hover {
+      border-color: #a855f7;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+    }
+
+    input[type="radio"]:checked {
+      background: radial-gradient(circle at 35% 35%, #d8b4fe, #7c3aed);
+      border-color: #c084fc;
+      box-shadow: 0 0 16px rgba(192, 132, 252, 0.7);
+    }
+
+    input[type="radio"]:checked::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    /* ── Links ── */
+    a {
+      color: #c084fc;
+      transition: color 0.3s ease, text-shadow 0.3s ease;
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #f0abfc;
+      text-shadow: 0 0 12px rgba(240, 171, 252, 0.7);
+    }
+
+    /* ── Install button visibility ── */
+    .invisible {
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0s 0.3s, opacity 0.3s linear;
+    }
+
+    esp-web-install-button {
+      display: inline-block;
+      margin-top: 10px;
+      transition: opacity 0.3s linear;
+    }
+
+    esp-web-install-button:not(.invisible) {
+      opacity: 1;
+      visibility: visible;
+      transition: visibility 0s 0s, opacity 0.3s linear;
+    }
+
+    esp-web-install-button[install-unsupported] {
+      visibility: inherit;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(180, 120, 255, 0.15);
+      font-size: 0.9rem;
+      color: rgba(200, 180, 255, 0.45);
+      letter-spacing: 0.5px;
+    }
+
+    .footer a {
+      color: #a78bfa;
+    }
+
+    .footer a:hover {
+      color: #e9d5ff;
+    }
+
+    /* ── Button row ── */
+    .button-row {
+      margin: 0;
+    }
+  </style>
+    <script type="module" src="https://unpkg.com/esp-web-tools@8.0.1/dist/web/install-button.js?module"></script>
+	  <script>
+    /* ────────────────────────────────────────────
+       Canvas background — animated 3-D looking
+       organic purple/violet blobs, matching the
+       "bg 2.jpg" reference.
+    ──────────────────────────────────────────── */
+    (function () {
+      const canvas = document.getElementById('bg-canvas');
+      const ctx = canvas.getContext('2d');
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      /* --- Blob definitions ---
+         Each blob is a large soft radial gradient that
+         simulates a lit 3-D hemisphere/tube shape.
+         We animate position + size over time.         */
+      const blobs = [
+        {
+          // top-left large violet mass
+          x: 0.10, y: 0.15,
+          rx: 0.55, ry: 0.55,
+          c1: 'rgba(115, 50, 230, 0.95)',
+          c2: 'rgba(60,  10, 120, 0.5)',
+          c3: 'rgba(5,   0,  20, 0)',
+          speed: 0.00018, phase: 0, amp: 0.06
+        },
+        {
+          // bottom-right mid blob
+          x: 0.78, y: 0.72,
+          rx: 0.45, ry: 0.45,
+          c1: 'rgba(145, 80, 255, 0.9)',
+          c2: 'rgba(75,  15, 170, 0.5)',
+          c3: 'rgba(5,   0,  20, 0)',
+          speed: 0.00022, phase: 1.8, amp: 0.05
+        },
+        {
+          // top-right accent
+          x: 0.88, y: 0.08,
+          rx: 0.32, ry: 0.32,
+          c1: 'rgba(180, 120, 255, 0.85)',
+          c2: 'rgba(100,  40, 190, 0.5)',
+          c3: 'rgba(5,    0,  20, 0)',
+          speed: 0.00015, phase: 3.5, amp: 0.04
+        },
+        {
+          // center highlight sweep
+          x: 0.45, y: 0.50,
+          rx: 0.50, ry: 0.38,
+          c1: 'rgba(160, 90, 255, 0.55)',
+          c2: 'rgba(80,  20, 160, 0.3)',
+          c3: 'rgba(5,   0,  20, 0)',
+          speed: 0.00012, phase: 0.9, amp: 0.07
+        },
+        {
+          // bottom-left dark anchor
+          x: 0.05, y: 0.82,
+          rx: 0.38, ry: 0.38,
+          c1: 'rgba(80, 20, 180, 0.7)',
+          c2: 'rgba(30,  5,  90, 0.45)',
+          c3: 'rgba(5,   0,  20, 0)',
+          speed: 0.00020, phase: 2.4, amp: 0.05
+        }
+      ];
+
+      /* Rim / edge darkening mask — drawn on top to
+         punch the dark rim between blobs, giving depth */
+      function drawRimMask() {
+        const W = canvas.width, H = canvas.height;
+        // vignette
+        const vg = ctx.createRadialGradient(W / 2, H / 2, H * 0, W / 2, H / 2, H * 0.85);
+        vg.addColorStop(0, 'rgba(0,0,0,0)');
+        vg.addColorStop(0.6, 'rgba(0,0,0,0)');
+        vg.addColorStop(1, 'rgba(0,0,0,0.82)');
+        ctx.fillStyle = vg;
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      let t = 0;
+      function draw() {
+        const W = canvas.width, H = canvas.height;
+        t++;
+
+        // base fill
+        ctx.fillStyle = '#050008';
+        ctx.fillRect(0, 0, W, H);
+
+        // draw each blob
+        blobs.forEach(b => {
+          const ox = Math.sin(t * b.speed * 100 + b.phase) * b.amp;
+          const oy = Math.cos(t * b.speed * 80 + b.phase + 1) * b.amp;
+          const cx = (b.x + ox) * W;
+          const cy = (b.y + oy) * H;
+          const rw = b.rx * Math.min(W, H);
+          const rh = b.ry * Math.min(W, H);
+
+          // use elliptical-ish gradient via scale trick
+          ctx.save();
+          ctx.scale(rw / rh, 1);
+          const grd = ctx.createRadialGradient(
+            cx / (rw / rh), cy, 0,
+            cx / (rw / rh), cy, rh
+          );
+          grd.addColorStop(0, b.c1);
+          grd.addColorStop(0.45, b.c2);
+          grd.addColorStop(1, b.c3);
+
+          ctx.globalCompositeOperation = 'screen';
+          ctx.fillStyle = grd;
+          ctx.fillRect(0, 0, W / (rw / rh), H);
+          ctx.restore();
+        });
+
+        // darkening rim + vignette on top
+        ctx.globalCompositeOperation = 'source-over';
+        drawRimMask();
+
+        requestAnimationFrame(draw);
+      }
+
+      draw();
+    })();
+
+    /* ── Radio → Install button ── */
+    document.querySelectorAll('input[name="type"]').forEach(radio =>
+      radio.addEventListener("change", () => {
+        const button = document.querySelector('esp-web-install-button');
+        button.manifest = `web/manifest_${radio.value}.json`;
+        button.classList.remove('invisible');
+      })
+    );
+  </script>
+  </head>
+  <body>
+    <div class="content">
+      <h1>BlUETOOTH Jammer Flasher</h1>
+      <p>Choose your hardware</p>
+      <ul class="radios">
+        <li>
+          <label><input type="radio" name="type" value="Ble1" /> Single Nrf24l01 Vspi (SCK = 18, MISO =19, MOSI = 23 ,CS =21 ,CE = 22)</label>
+        </li>
+        <li>
+          <label><input type="radio" name="type" value="Ble2" /> Dual Nrf24l01 Vspi and Hspi pins</label>
+        </li>
+		<li>
+          <label><input type="radio" name="type" value="Ble3" /> Single Nrf24l01 Hspi (SCK = 14, MISO = 12, MOSI = 13, CS = 15 , CE = 16)</label>
+        </li>
+     
+      </ul>
+      <p class="button-row" align="center">
+        <esp-web-install-button class="invisible"></esp-web-install-button>
+      </p>
+
+      <div class="footer">
+	    <a href="https://www.youtube.com/@AltTabTech-k7j">Subscribe</a> Now!
+    </div>
+    <script>
+	
+      document.querySelectorAll('input[name="type"]').forEach(radio =>
+        radio.addEventListener("change", () => {
+          const button = document.querySelector('esp-web-install-button');
+          button.manifest = `web/manifest_${radio.value}.json`;
+          button.classList.remove('invisible');
+        }
+      ));
+    </script>
+  </body>
+</html>
